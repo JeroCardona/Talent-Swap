@@ -8,7 +8,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import auth
 from django.contrib.auth import authenticate, login, logout
 
+#Almacenar y gestionar archivos 
+from django.core.files.storage import FileSystemStorage
 
+from .forms import VacancyForm
+from .models import Vacancy
 def homepage(request):
 
     return render(request, 'TalentSwapApp/home.html') # Home de verdad
@@ -72,3 +76,31 @@ def logout(request):
 def dashboard(request):
     
     return render(request, 'TalentSwapApp/dashboard.html') 
+
+
+def upload(request):
+    context = {}
+    if request.method == 'POST':
+        uploaded_file = request.FILES['document']
+        fs = FileSystemStorage()
+        name = fs.save(uploaded_file.name, uploaded_file)
+        context['url'] = fs.url(name)
+    return render(request, 'upload.html', context)
+
+def Vacancy_list(request):
+    vacancies = Vacancy.objects.all()
+    return render(request, 'TalentSwapApp/Vacancy_list.html',{
+        'vacancies' : vacancies
+    })
+
+def upload_vacancy(request):
+    if request.method == "POST":
+        form = VacancyForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('Vacancy_list')
+    else:
+        form = VacancyForm()
+    return render(request, 'TalentSwapApp/upload_vacancy.html', {
+        'form': form
+    })

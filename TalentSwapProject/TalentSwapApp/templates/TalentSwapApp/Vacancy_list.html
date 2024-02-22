@@ -1,0 +1,23 @@
+<h1>Vacancy List</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Download</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for Vacancy in vacancies %}
+            <tr>
+                <td>{{ Vacancy.title }}</td>
+                <td>{{ Vacancy.description }}</td>
+                    <a href="{{ Vacancy.document.url }}" class="btn btn-primary btn-sm" target="_blank">
+                        Download document
+                    </a>
+                <td>{{ Vacancy.document }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

@@ -5,6 +5,7 @@ from django import forms
 
 from django.forms.widgets import TextInput, PasswordInput
 
+from .models import Vacancy
 # Registro de usuario (Modelo u "objeto" formulario)
 
 class CreateUserForm(UserCreationForm):
@@ -20,3 +21,9 @@ class CreateUserForm(UserCreationForm):
 class LoginForm(AuthenticationForm):
     username = forms.CharField(widget=TextInput())
     password = forms.CharField(widget=PasswordInput())
+
+
+class VacancyForm(forms.ModelForm):
+    class Meta:
+        model = Vacancy 
+        fields = ('title', 'description', 'document')
