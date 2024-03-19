@@ -5,7 +5,7 @@ from .models import Vacancy, Comment
 
 @admin.register(Vacancy)
 class VacancyAdmin(admin.ModelAdmin):
-    list_display = ('title', 'description', 'document')
+    list_display = ('title', 'description', 'document', 'id')
     list_filter = ('title', 'description')
     search_fields = ('title', 'description')
 

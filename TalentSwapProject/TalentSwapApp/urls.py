@@ -19,7 +19,9 @@ urlpatterns = [
 
     path('vacancies/' , views.Vacancy_list, name= 'Vacancy_list'),
 
-    path('vacancies/upload/' , views.upload_vacancy, name= 'upload_vacancy')
+    path('vacancies/upload/' , views.upload_vacancy, name= 'upload_vacancy'),
+
+    path('vacancies/<int:id>/detail/', views.vacancy_detail, name='vacancy_detail'),
 
 ]
 

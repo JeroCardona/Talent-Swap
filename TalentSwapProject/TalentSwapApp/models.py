@@ -5,7 +5,9 @@ from django.db import models
 class Vacancy(models.Model):
     title = models.CharField(max_length=150)
     description = models.TextField()
+    created_on = models.DateTimeField(auto_now_add=True)
     document = models.FileField(upload_to='vacancies/')
+    id = models.AutoField(primary_key=True)
 
     def __str__(self) -> str:
         return self.title
