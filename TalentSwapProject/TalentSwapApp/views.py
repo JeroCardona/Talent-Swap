@@ -108,6 +108,9 @@ def upload_vacancy(request):
 def vacancy_detail(request, id):
     template_name = 'TalentSwapApp/vacancy_details.html'
     vacancy = get_object_or_404(Vacancy, id=id)
+    print(vacancy.title)
+    print(vacancy.description)
+    print(vacancy.created_on)
     comments = vacancy.comments.filter(active=True)
     new_comment = None
     if request.method == 'POST':
