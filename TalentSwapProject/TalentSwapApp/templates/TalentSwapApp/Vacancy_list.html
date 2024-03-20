@@ -16,6 +16,8 @@
                     <th>Title</th>
                     <th>Description</th>
                     <th>Vacancy</th>
+                    <th>Opciones</th>
+                    <th>Details</th>
                 </tr>
             </thead>
             <tbody>
@@ -27,6 +29,12 @@
                             <a href="{{ Vacancy.document.url }}" class="btn btn-primary btn-sm" target="_blank">
                                 Download document
                             </a>
+                        </td>
+                        <td>
+                            <a href="applyVacancy/" class="btn btn-info">Apply</a>
+                        </td>
+                        <td>
+                            <a href="{% url 'vacancy_detail' Vacancy.id %}" class="btn btn-primary btn-sm">View</a>
                         </td>
                     </tr>
                 {% endfor %}

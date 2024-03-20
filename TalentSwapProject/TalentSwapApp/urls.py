@@ -19,8 +19,15 @@ urlpatterns = [
 
     path('vacancies/' , views.Vacancy_list, name= 'Vacancy_list'),
 
-    path('vacancies/upload/' , views.upload_vacancy, name= 'upload_vacancy')
+    path('vacancies/upload/' , views.upload_vacancy, name = 'upload_vacancy'),
 
+    path('vacancies/applyVacancy/', views.apply_Vacancy, name = 'applyVacancy'),
+
+    path('vacancies/Applied_Vacancies', views.Applied_Vacancies, name = 'Applied_Vacancies'),
+
+    path('vacancies/<int:id>/detail/', views.vacancy_detail, name='vacancy_detail'),
+    
+    path('deleteVacancy/<title>', views.delete_Vacancy, name = 'deleteVacancy')
 ]
 
 #uso de archivos de multimedia durante el desarrollo

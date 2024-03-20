@@ -1,6 +1,7 @@
+from django.shortcuts import render, redirect, get_object_or_404
 from django.shortcuts import render, redirect
 
-from . forms import CreateUserForm, LoginForm 
+from . forms import CreateUserForm, LoginForm, CommentForm
 #Forms es un archivo nuevo donde se guardan los formularios
 from django.contrib.auth.decorators import login_required
 
@@ -12,7 +13,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.files.storage import FileSystemStorage
 
 from .forms import VacancyForm
-from .models import Vacancy
+from .models import Vacancy, Comment
+
+from .forms import applyVacancyForm
+from .models import applyVacancy
+
 def homepage(request):
 
     return render(request, 'TalentSwapApp/home.html') # Home de verdad
@@ -104,3 +109,47 @@ def upload_vacancy(request):
     return render(request, 'TalentSwapApp/upload_vacancy.html', {
         'form': form
     })
+
+def apply_Vacancy(request):
+    if request.method == "POST":
+        form = applyVacancyForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('Applied_Vacancies')
+    else:
+        form = applyVacancyForm()
+    return render(request, 'TalentSwapApp/applyVacancy.html', {
+        'form': form
+    })
+
+def Applied_Vacancies(request):
+    template_name = 'TalentSwapApp/Applied_vacancies.html'
+    vacancies = applyVacancy.objects.all()
+    return render(request, template_name, {'vacancies': vacancies})
+
+def delete_Vacancy(request, title):
+    vacancies = applyVacancy.objects.filter(title=title)
+    vacancies.delete()
+
+    return render(request, 'TalentSwapApp/Applied_vacancies.html')
+
+def vacancy_detail(request, id):
+    template_name = 'TalentSwapApp/vacancy_details.html'
+    vacancy = get_object_or_404(Vacancy, id=id)
+    print(vacancy.title)
+    print(vacancy.description)
+    print(vacancy.created_on)
+    comments = vacancy.comments.filter(active=True)
+    new_comment = None
+    if request.method == 'POST':
+        comment_form = CommentForm(data=request.POST)
+        if comment_form.is_valid():
+            new_comment = comment_form.save(commit=False)
+            new_comment.vacancy = vacancy
+            new_comment.save()
+    else:
+        comment_form = CommentForm()
+    return render(request, template_name, {'vacancy': vacancy,
+                                           'comments': comments,
+                                           'new_comment': new_comment,
+                                           'comment_form': comment_form})
