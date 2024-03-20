@@ -3,7 +3,7 @@ from . import views
 
 from django.conf import settings
 from django.conf.urls.static import static
-
+from .views import download_file
 
 urlpatterns = [
 
@@ -27,7 +27,11 @@ urlpatterns = [
 
     path('vacancies/<int:id>/detail/', views.vacancy_detail, name='vacancy_detail'),
     
-    path('deleteVacancy/<title>', views.delete_Vacancy, name = 'deleteVacancy')
+    path('deleteVacancy/<title>', views.delete_Vacancy, name = 'deleteVacancy'),
+    
+    path('download/', download_file, name='download_file'),
+
+
 ]
 
 #uso de archivos de multimedia durante el desarrollo

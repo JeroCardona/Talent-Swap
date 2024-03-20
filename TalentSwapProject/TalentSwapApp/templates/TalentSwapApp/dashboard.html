@@ -12,11 +12,15 @@
         {% block content %}
 
         <p>
+            <a href="{% url 'download_file' %}" download="Guide contract" class="btn btn-success">Download Contract</a>
+        </p>
+
+        <p>
             <a href="{% url 'upload_vacancy' %}" class="btn btn-primary">Upload Vacancy</a>
         </p>
 
         <p>
-            <a href="{% url 'Applied_Vacancies' %}" class="btn btn-primary">Applied Vacancies</a>
+            <a href="{% url 'Applied_Vacancies' %}" class="btn btn-danger">Applied Vacancies</a>
         </p>
 
         <p>
@@ -25,7 +29,7 @@
 
 
         <p>
-        <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+        <a href="{% url 'logout' %}" class="btn btn-primary">Logout</a>
         </p>
 
         {% endblock %}

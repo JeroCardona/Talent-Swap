@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.shortcuts import render, redirect
+import os
+from django.http import HttpResponse
 
 from . forms import CreateUserForm, LoginForm, CommentForm
 #Forms es un archivo nuevo donde se guardan los formularios
@@ -130,7 +132,7 @@ def Applied_Vacancies(request):
 def delete_Vacancy(request, title):
     vacancies = applyVacancy.objects.filter(title=title)
     vacancies.delete()
-
+    
     return render(request, 'TalentSwapApp/Applied_vacancies.html')
 
 def vacancy_detail(request, id):
@@ -153,3 +155,13 @@ def vacancy_detail(request, id):
                                            'comments': comments,
                                            'new_comment': new_comment,
                                            'comment_form': comment_form})
+
+def download_file(request):
+    # Ruta al archivo que deseas descargar
+    file_path = 'C:/Users/ASUS/Desktop/programacionVisual/Talent-Swap (2)/Talent-Swap/TalentSwapProject/media/vacancies/GUÍA DE CONTRATO E INFORMACIÓN PERTINENTE.pdf'
+
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(fh.read(), content_type='application/zip')
+            response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
+            return response
