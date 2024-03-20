@@ -162,6 +162,6 @@ def download_file(request):
 
     if os.path.exists(file_path):
         with open(file_path, 'rb') as fh:
-            response = HttpResponse(fh.read(), content_type='application/zip')
+            response = HttpResponse(fh.read(), content_type='')
             response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
             return response
