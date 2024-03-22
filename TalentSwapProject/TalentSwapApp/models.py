@@ -26,7 +26,7 @@ class Employee(User):
     employee_name = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return self.employee_name
+        return self.employee_name 
 
 class Company(User):
     # Agrega el campo related_name para evitar conflictos con los grupos y permisos de usuario

@@ -24,10 +24,10 @@
             <tbody>
                 {% for vacancy in matched_vacancies %}
                     <tr>
-                        <td>{{ Vacancy.title }}</td>
-                        <td>{{ Vacancy.description }}</td>
-                        <td>{{ Vacancy.document }}
-                            <a href="{{ Vacancy.document.url }}" class="btn btn-primary btn-sm" target="_blank">
+                        <td>{{ vacancy.title }}</td>
+                        <td>{{ vacancy.description }}</td>
+                        <td>{{ vacancy.document }}
+                            <a href="{{ vacancy.document.url }}" class="btn btn-primary btn-sm" target="_blank">
                                 Download document
                             </a>
                         </td>
@@ -35,7 +35,7 @@
                             <a href="applyVacancy/" class="btn btn-info">Apply</a>
                         </td>
                         <td>
-                            <a href="{% url 'vacancy_detail' Vacancy.id %}" class="btn btn-primary btn-sm">View</a>
+                            <a href="{% url 'vacancy_detail' vacancy.id %}" class="btn btn-primary btn-sm">View</a>
                         </td>
                     </tr>
                 {% endfor %}

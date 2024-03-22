@@ -116,7 +116,7 @@ def login(request):
 
                 auth.login(request, user)
 
-                if hasattr(user, 'company_type'):  # Verifica si es una compañía
+                if Company.objects.filter(id = user.id):  # Verifica si es una compañía
                     return redirect('dashboard_company')
                 else:
                     return redirect('dashboard_employee')
@@ -223,18 +223,22 @@ def download_file(request):
             return response
         
 def matched_vacancies(request):
-    user = request.user
-    matched_vacancies = []
+    
+    if request.user.is_authenticated :
+        user_id = request.user.id
+        user = Employee.objects.filter(id=user_id)[0] #obtener el usuario de tipo empleado y no el general
+        if hasattr(user, 'interests'):
+            matched_vacancies = [] # creo la lista donde van a estar las vacantes del match
+            interests = set(user.interests.split()) # Convertir los intereses del usuario en un conjunto de palabras
+            for vacancy in Vacancy.objects.all():
+                vacancy_description_words = set(vacancy.description.split())  # Convertir la descripción de la vacante en un conjunto de palabras
+                    # Verificar si hay alguna intersección entre los intereses del usuario y las palabras en la descripción de la vacante
+                if interests.intersection(vacancy_description_words):
+                        print("#2") 
+                        matched_vacancies.append(vacancy)
+    else:
+        return redirect('login')
 
-    if user.is_authenticated and hasattr(user, 'interests'):
-        interests = set(user.interests.split())  # Convertir los intereses del usuario en un conjunto de palabras
-
-        # Recorrer todas las vacantes
-        for vacancy in Vacancy.objects.all():
-            vacancy_description_words = set(vacancy.description.split())  # Convertir la descripción de la vacante en un conjunto de palabras
-            # Verificar si hay alguna intersección entre los intereses del usuario y las palabras en la descripción de la vacante
-            if interests.intersection(vacancy_description_words):
-                matched_vacancies.append(vacancy)
-
+    print(matched_vacancies)
     return render(request, 'TalentSwapApp/matched_vacancies.html', {'matched_vacancies': matched_vacancies})
         

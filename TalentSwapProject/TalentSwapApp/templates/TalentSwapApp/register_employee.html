@@ -13,6 +13,9 @@
             {{ form.as_p }}
             <input type="submit" class="btn btn-success" value="Register">
         </form>
+        <p>
+            <a href="{% url 'home' %}" class="btn btn-danger">Home </a>
+        </p>
         {% if messages %}
         <ul>
             {% for message in messages %}
