@@ -29,10 +29,9 @@ urlpatterns = [
 
     path('vacanciesemployee/' , views.vacancy_listemployee, name= 'vacancy_listemployee'),
     
-
     path('vacancies/upload/' , views.upload_vacancy, name = 'upload_vacancy'),
 
-    path('vacancies/applyVacancy/', views.apply_Vacancy, name = 'applyVacancy'),
+    path('vacanciesemployee/applyVacancy/', views.apply_Vacancy, name = 'applyVacancy'),
 
     path('vacancies/Applied_Vacancies', views.Applied_Vacancies, name = 'Applied_Vacancies'),
 
