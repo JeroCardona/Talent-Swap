@@ -151,9 +151,15 @@ def upload(request):
         context['url'] = fs.url(name)
     return render(request, 'upload.html', context)
 
-def Vacancy_list(request):
+def vacancy_listemployee(request):
     vacancies = Vacancy.objects.all()
-    return render(request, 'TalentSwapApp/Vacancy_list.html',{
+    return render(request, 'TalentSwapApp/vacancy_listemployee.html',{
+        'vacancies' : vacancies
+    })
+
+def vacancy_listcompany(request):
+    vacancies = Vacancy.objects.all()
+    return render(request, 'TalentSwapApp/vacancy_listcompany.html',{
         'vacancies' : vacancies
     })
 
@@ -233,12 +239,11 @@ def matched_vacancies(request):
             for vacancy in Vacancy.objects.all():
                 vacancy_description_words = set(vacancy.description.split())  # Convertir la descripción de la vacante en un conjunto de palabras
                     # Verificar si hay alguna intersección entre los intereses del usuario y las palabras en la descripción de la vacante
-                if interests.intersection(vacancy_description_words):
-                        print("#2") 
+                if interests.intersection(vacancy_description_words): 
                         matched_vacancies.append(vacancy)
     else:
         return redirect('login')
 
-    print(matched_vacancies)
+    
     return render(request, 'TalentSwapApp/matched_vacancies.html', {'matched_vacancies': matched_vacancies})
         

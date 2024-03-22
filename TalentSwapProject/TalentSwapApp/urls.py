@@ -25,7 +25,10 @@ urlpatterns = [
 
     path('logout/', views.logout, name='logout'),
 
-    path('vacancies/' , views.Vacancy_list, name= 'Vacancy_list'),
+    path('vacanciescompany/' , views.vacancy_listcompany, name= 'vacancy_listcompany'),
+
+    path('vacanciesemployee/' , views.vacancy_listemployee, name= 'vacancy_listemployee'),
+    
 
     path('vacancies/upload/' , views.upload_vacancy, name = 'upload_vacancy'),
 
