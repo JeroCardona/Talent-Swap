@@ -168,7 +168,7 @@ def upload_vacancy(request):
             form = VacancyForm(request.POST, request.FILES)
             if form.is_valid():
                 form.save()
-                return redirect('Vacancy_list')
+                return redirect('vacancy_listcompany')
         else:
             form = VacancyForm()
         return render(request, 'TalentSwapApp/upload_vacancy.html', {'form': form})
@@ -197,8 +197,29 @@ def delete_Vacancy(request, title):
     
     return render(request, 'TalentSwapApp/Applied_vacancies.html')
 
-def vacancy_detail(request, id):
-    template_name = 'TalentSwapApp/vacancy_details.html'
+def vacancy_detailemployee(request, id):
+    template_name = 'TalentSwapApp/vacancy_detailsemployee.html'
+    vacancy = get_object_or_404(Vacancy, id=id)
+    print(vacancy.title)
+    print(vacancy.description)
+    print(vacancy.created_on)
+    comments = vacancy.comments.filter(active=True)
+    new_comment = None
+    if request.method == 'POST':
+        comment_form = CommentForm(data=request.POST)
+        if comment_form.is_valid():
+            new_comment = comment_form.save(commit=False)
+            new_comment.vacancy = vacancy
+            new_comment.save()
+    else:
+        comment_form = CommentForm()
+    return render(request, template_name, {'vacancy': vacancy,
+                                        'comments': comments,
+                                        'new_comment': new_comment,
+                                        'comment_form': comment_form})
+
+def vacancy_detailcompany(request, id):
+    template_name = 'TalentSwapApp/vacancy_detailscompany.html'
     vacancy = get_object_or_404(Vacancy, id=id)
     print(vacancy.title)
     print(vacancy.description)

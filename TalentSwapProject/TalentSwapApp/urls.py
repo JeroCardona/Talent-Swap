@@ -35,7 +35,9 @@ urlpatterns = [
 
     path('vacancies/Applied_Vacancies', views.Applied_Vacancies, name = 'Applied_Vacancies'),
 
-    path('vacancies/<int:id>/detail/', views.vacancy_detail, name='vacancy_detail'),
+    path('vacancies/<int:id>/detailemployee/', views.vacancy_detailemployee, name='vacancy_detailemployee'),
+
+    path('vacancies/<int:id>/detailcompany/', views.vacancy_detailcompany, name='vacancy_detailcompany'),
     
     path('deleteVacancy/<title>', views.delete_Vacancy, name = 'deleteVacancy'),
     
