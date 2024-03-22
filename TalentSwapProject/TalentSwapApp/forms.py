@@ -8,13 +8,29 @@ from django.forms.widgets import TextInput, PasswordInput
 from .models import Vacancy, applyVacancy, Comment
 # Registro de usuario (Modelo u "objeto" formulario)
 
-class CreateUserForm(UserCreationForm):
-    interests = forms.CharField(widget=TextInput(attrs={'placeholder': 'Interests'}), required=False, max_length=500, help_text='Interests (optional)')
-    information = forms.CharField(widget=TextInput(attrs={'placeholder': 'Information'}), required=False, max_length=500, help_text='User Information (optional)')
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'password1', 'password2', 'information', 'interests']
+class UserTypeForm(forms.Form):
+    USER_CHOICES = [
+        ('company', 'Company'),
+        ('employee', 'Employee'),
+    ]
+    user_type = forms.ChoiceField(label='User Type', choices=USER_CHOICES, widget=forms.RadioSelect)
 
+class CompanyRegistrationForm(forms.Form):
+    username = forms.CharField(label='Username')
+    company_name = forms.CharField(label='Company Name')
+    email = forms.EmailField(label='Email')
+    password = forms.CharField(label='Password', widget=forms.PasswordInput)
+    company_type = forms.CharField(label='Company Type')
+    information = forms.CharField(label='Information')
+    
+
+class EmployeeRegistrationForm(forms.Form):
+    username = forms.CharField(label='Username')
+    employee_name = forms.CharField(label='Name and Lastname')
+    email = forms.EmailField(label='Email')
+    password = forms.CharField(label='Password', widget=forms.PasswordInput)
+    information = forms.CharField(label='Academic Information')
+    interests = forms.CharField(label='Interests')
 
 # Autenticación de usuario (Modelo u "objeto" formulario)
 

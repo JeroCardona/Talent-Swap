@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 import os
 from django.http import HttpResponse
 
-from . forms import CreateUserForm, LoginForm, CommentForm
+from . forms import  LoginForm, CommentForm
 #Forms es un archivo nuevo donde se guardan los formularios
 from django.contrib.auth.decorators import login_required
 
@@ -20,26 +20,79 @@ from .models import Vacancy, Comment
 from .forms import applyVacancyForm
 from .models import applyVacancy
 
+from .forms import UserTypeForm, CompanyRegistrationForm, EmployeeRegistrationForm
+from django.contrib.auth.models import User
+from .models import User, Company, Employee
+from django.contrib import messages
+
 def homepage(request):
 
     return render(request, 'TalentSwapApp/home.html') # Home de verdad
 
 
-
 def register(request):
-
-    form = CreateUserForm()
-
     if request.method == 'POST':
-        form = CreateUserForm(request.POST)
-        if form.is_valid():
-            form.save() # Guarda el usuario en la base de datos
+        user_type_form = UserTypeForm(request.POST)
+        if user_type_form.is_valid():
+            user_type = user_type_form.cleaned_data['user_type']
+            if user_type == 'company':
+                return redirect('register_company')
+            elif user_type == 'employee':
+                return redirect('register_employee')
+    else:
+        user_type_form = UserTypeForm()
+    return render(request, 'TalentSwapApp/register.html', {'user_type_form': user_type_form})
 
-            return redirect('login') # Redirige a la página de login
-        
-    context = {'registerform': form}
-    
-    return render(request, 'TalentSwapApp/register.html', context=context) 
+def register_employee(request):
+    if request.method == 'POST':
+        form = EmployeeRegistrationForm(request.POST)
+        if form.is_valid():
+            employee_name = form.cleaned_data['employee_name']
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+            information = form.cleaned_data['information']
+            interests = form.cleaned_data['interests']
+            user = Employee.objects.create_user(username=email, email=email, password=password, information=information)
+            user.employee_name = employee_name
+            user.interests = interests
+            user.save()
+            messages.success(request, '¡Empleado registrado correctamente!')
+            return redirect('dashboard_employee')  # Redirigir a la página de dashboard del empleado
+    else:
+        form = EmployeeRegistrationForm()
+    return render(request, 'TalentSwapApp/register_employee.html', {'form': form})
+
+def register_company(request):
+    if request.method == 'POST':
+        form = CompanyRegistrationForm(request.POST)
+        if form.is_valid():
+            company_name = form.cleaned_data['company_name']
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+            information = form.cleaned_data['information']
+            company_type = form.cleaned_data['company_type']
+            user = Company.objects.create_user(username=email, email=email, password=password, information=information)
+            user.company_name = company_name
+            user.company_type = company_type
+            user.save()
+            messages.success(request, '¡Compañía registrada correctamente!')
+            return redirect('dashboard_company')  # Redirigir a la página de dashboard de la compañía
+    else:
+        form = CompanyRegistrationForm()
+    return render(request, 'TalentSwapApp/register_company.html', {'form': form})
+
+
+
+
+def dashboard_employee(request):
+    # Lógica para mostrar el dashboard del empleado
+    return render(request, 'TalentSwapApp/dashboard_employee.html')
+
+
+
+def dashboard_company(request):
+    # Lógica para mostrar el dashboard de la compañia
+    return render(request, 'TalentSwapApp/dashboard_company.html')
 
 
 
@@ -58,12 +111,16 @@ def login(request):
             password = request.POST.get('password')
 
             user = authenticate(request, username=username, password=password)
-
+            
             if user is not None:
 
                 auth.login(request, user)
 
-                return redirect('dashboard')
+                if hasattr(user, 'company_type'):  # Verifica si es una compañía
+                    return redirect('dashboard_company')
+                else:
+                    return redirect('dashboard_employee')
+
             
         
     context = {'loginform': form}
@@ -79,10 +136,10 @@ def logout(request):
 
 
 
-@login_required(login_url='login')
-def dashboard(request):
+# @login_required(login_url='login')
+# def dashboard(request):
     
-    return render(request, 'TalentSwapApp/dashboard.html') 
+#     return render(request, 'TalentSwapApp/dashboard.html') 
 
 
 def upload(request):
@@ -101,16 +158,15 @@ def Vacancy_list(request):
     })
 
 def upload_vacancy(request):
-    if request.method == "POST":
-        form = VacancyForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('Vacancy_list')
-    else:
-        form = VacancyForm()
-    return render(request, 'TalentSwapApp/upload_vacancy.html', {
-        'form': form
-    })
+        if request.method == "POST":
+            form = VacancyForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                return redirect('Vacancy_list')
+        else:
+            form = VacancyForm()
+        return render(request, 'TalentSwapApp/upload_vacancy.html', {'form': form})
+    
 
 def apply_Vacancy(request):
     if request.method == "POST":
@@ -152,16 +208,33 @@ def vacancy_detail(request, id):
     else:
         comment_form = CommentForm()
     return render(request, template_name, {'vacancy': vacancy,
-                                           'comments': comments,
-                                           'new_comment': new_comment,
-                                           'comment_form': comment_form})
+                                        'comments': comments,
+                                        'new_comment': new_comment,
+                                        'comment_form': comment_form})
 
 def download_file(request):
     # Ruta al archivo que deseas descargar
-    file_path = 'C:/Users/ASUS/Desktop/programacionVisual/Talent-Swap (2)/Talent-Swap/TalentSwapProject/media/vacancies/GUÍA DE CONTRATO E INFORMACIÓN PERTINENTE.pdf'
+    file_path = "C:/Users/USUARIO/U/P1/Proyecto/Talent-Swap/TalentSwapProject/media/vacancies/GUÍA DE CONTRATO E INFORMACIÓN PERTINENTE.pdf"
 
     if os.path.exists(file_path):
         with open(file_path, 'rb') as fh:
             response = HttpResponse(fh.read(), content_type='')
             response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
             return response
+        
+def matched_vacancies(request):
+    user = request.user
+    matched_vacancies = []
+
+    if user.is_authenticated and hasattr(user, 'interests'):
+        interests = set(user.interests.split())  # Convertir los intereses del usuario en un conjunto de palabras
+
+        # Recorrer todas las vacantes
+        for vacancy in Vacancy.objects.all():
+            vacancy_description_words = set(vacancy.description.split())  # Convertir la descripción de la vacante en un conjunto de palabras
+            # Verificar si hay alguna intersección entre los intereses del usuario y las palabras en la descripción de la vacante
+            if interests.intersection(vacancy_description_words):
+                matched_vacancies.append(vacancy)
+
+    return render(request, 'TalentSwapApp/matched_vacancies.html', {'matched_vacancies': matched_vacancies})
+        

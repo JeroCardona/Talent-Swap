@@ -1,6 +1,54 @@
 from django.db import models
-
+from django.contrib.auth.models import AbstractUser
 # Create your models here.
+
+class User(AbstractUser):
+    id = models.AutoField(primary_key=True)
+    information = models.TextField()
+
+class Employee(User):
+    # Agrega el campo related_name para evitar conflictos con los grupos y permisos de usuario
+    groupsemployee = models.ManyToManyField(
+        'auth.Group',
+        related_name='employee_groups',
+        blank=True,
+        verbose_name='groups',
+        help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.',
+    )
+    employee_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='employee_user_permissions',
+        blank=True,
+        verbose_name='user permissions',
+        help_text='Specific permissions for this user.',
+    )
+    interests = models.TextField()
+    employee_name = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return self.employee_name
+
+class Company(User):
+    # Agrega el campo related_name para evitar conflictos con los grupos y permisos de usuario
+    groupscompany = models.ManyToManyField(
+        'auth.Group',
+        related_name='company_groups',
+        blank=True,
+        verbose_name='groups',
+        help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.',
+    )
+    company_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='company_user_permissions',
+        blank=True,
+        verbose_name='user permissions',
+        help_text='Specific permissions for this user.',
+    )
+    company_name = models.CharField(max_length=255, blank=True, null=True)
+    company_type = models.CharField(max_length=255, blank=True, null=True)
+    
+    def __str__(self):
+        return self.company_name
 
 class Vacancy(models.Model):
     title = models.CharField(max_length=150)

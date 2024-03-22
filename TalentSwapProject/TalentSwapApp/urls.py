@@ -11,9 +11,17 @@ urlpatterns = [
 
     path('register/', views.register, name='register'),
 
+    path('register_company/', views.register_company, name='register_company'),
+
+    path('register_employee/', views.register_employee, name='register_employee'),
+
     path('login/', views.login, name='login'),
 
-    path('dashboard/', views.dashboard, name='dashboard'),
+    path('dashboard_employee/', views.dashboard_employee, name='dashboard_employee'),
+
+    path('dashboard_company/', views.dashboard_company, name='dashboard_company'),
+
+    path('matched_vacancies/', views.matched_vacancies, name='matched_vacancies'),
 
     path('logout/', views.logout, name='logout'),
 
