@@ -75,3 +75,16 @@ class Comment(models.Model):
 
     def __str__(self):
         return 'Comment {} by {}'.format(self.body, self.author)
+    
+class Application(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='applied_to')
+    vacancy = models.ForeignKey(Vacancy, on_delete=models.CASCADE, related_name='applications')
+    status = models.CharField(max_length=15, choices=[('pending', 'Pending'), ('accepted', 'Accepted'), ('rejected', 'Rejected')], default='pending')
+    created_on = models.DateTimeField(auto_now_add=True)
+    id = models.AutoField(primary_key=True)
+
+    class Meta:
+        ordering = ['created_on']
+
+    def __str__(self):
+        return 'Application for {} by {}'.format(self.vacancy, self.employee)

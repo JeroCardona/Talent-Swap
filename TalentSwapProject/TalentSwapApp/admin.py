@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Employee, Company, Vacancy, Comment
+from .models import Employee, Company, Vacancy, Comment, Application
 
 
 @admin.register(Vacancy)
@@ -29,6 +29,13 @@ class CompanyAdmin(admin.ModelAdmin):
 
 admin.site.register(Employee, EmployeeAdmin)
 admin.site.register(Company, CompanyAdmin)
+
+@admin.register(Application)
+class ApplicationAdmin(admin.ModelAdmin):
+    list_display = ('employee', 'vacancy', 'created_on', 'status')
+    list_filter = ('employee', 'vacancy', 'status', 'created_on')
+    search_fields = ('employee', 'vacancy')
+    
 
 
 # Register your models here.
