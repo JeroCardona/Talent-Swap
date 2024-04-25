@@ -31,6 +31,7 @@ class EmployeeRegistrationForm(forms.Form):
     password = forms.CharField(label='Password', widget=forms.PasswordInput)
     information = forms.CharField(label='Academic Information')
     interests = forms.CharField(label='Interests')
+    work_experience = forms.IntegerField(label='Work Experience (months)', min_value=0)
 
 # Autenticación de usuario (Modelo u "objeto" formulario)
 

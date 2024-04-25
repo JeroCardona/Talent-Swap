@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.shortcuts import render, redirect
 import os
@@ -52,9 +53,11 @@ def register_employee(request):
             password = form.cleaned_data['password']
             information = form.cleaned_data['information']
             interests = form.cleaned_data['interests']
+            work_experience = form.cleaned_data['work_experience']
             user = Employee.objects.create_user(username=email, email=email, password=password, information=information)
             user.employee_name = employee_name
             user.interests = interests
+            user.work_experience = work_experience
             user.save()
             messages.success(request, '¡Empleado registrado correctamente!')
             return redirect('dashboard_employee')  # Redirigir a la página de dashboard del empleado
@@ -240,14 +243,15 @@ def vacancy_detailcompany(request, id):
                                         'comment_form': comment_form})
 
 def download_file(request):
-    # Ruta al archivo que deseas descargar
-    file_path = "C:/Users/USUARIO/U/P1/Proyecto/Talent-Swap/TalentSwapProject/media/vacancies/GUÍA DE CONTRATO E INFORMACIÓN PERTINENTE.pdf"
+    file_path = os.path.join(settings.MEDIA_ROOT, 'vacancies', 'GUÍA DE CONTRATO E INFORMACIÓN PERTINENTE.pdf')
 
     if os.path.exists(file_path):
         with open(file_path, 'rb') as fh:
-            response = HttpResponse(fh.read(), content_type='')
-            response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
+            response = HttpResponse(fh.read(), content_type='application/pdf')
+            response['Content-Disposition'] = 'attachment; filename=' + os.path.basename(file_path)
             return response
+    else:
+        return HttpResponse("El archivo no existe", status=404)
         
 def matched_vacancies(request):
     
@@ -267,4 +271,28 @@ def matched_vacancies(request):
 
     
     return render(request, 'TalentSwapApp/matched_vacancies.html', {'matched_vacancies': matched_vacancies})
-        
+
+def confirm_vacancy(request, vacancy_id):
+    vacancy = get_object_or_404(Vacancy, id=vacancy_id)
+    if request.method == 'POST':
+        # Cambiar el estado de la vacante a "no disponible" (status=False)
+        vacancy.status = False
+        vacancy.save()
+        return redirect('vacancy_listemployee')
+    return render(request, 'confirm_vacancy.html', {'vacancy': vacancy}) 
+
+def reopen_vacancy_company(request, vacancy_id):
+    vacancy = get_object_or_404(Vacancy, id=vacancy_id)
+    if request.method == 'POST':
+        # Cambiar el estado de la vacante a "disponible" (status=True)
+        vacancy.status = True
+        vacancy.save()
+        return redirect('dashboard_company')
+    return render(request, 'reopen_vacancy_company.html', {'vacancy': vacancy})   
+
+def statistics(request):
+    # Obtener todos los empleados ordenados por experiencia laboral en meses
+    employees = Employee.objects.order_by('work_experience')
+
+    # Pasar los empleados a la plantilla
+    return render(request, 'TalentSwapApp/statistics.html', {'employees': employees})    

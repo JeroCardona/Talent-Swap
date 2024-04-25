@@ -22,6 +22,7 @@ class Employee(User):
         verbose_name='user permissions',
         help_text='Specific permissions for this user.',
     )
+    work_experience = models.IntegerField(default=0, verbose_name='Experiencia laboral en meses')
     interests = models.TextField()
     employee_name = models.CharField(max_length=255, blank=True, null=True)
 
@@ -51,6 +52,7 @@ class Company(User):
         return self.company_name
 
 class Vacancy(models.Model):
+    status = models.BooleanField(default=True)
     title = models.CharField(max_length=150)
     description = models.TextField()
     created_on = models.DateTimeField(auto_now_add=True)

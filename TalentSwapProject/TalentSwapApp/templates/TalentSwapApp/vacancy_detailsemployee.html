@@ -53,6 +53,15 @@
                             </form>
                         {% endif %}
                     </div>
+                    <div class="card-body">
+                        <p>Status: {% if vacancy.status %}Disponible{% else %}No disponible{% endif %}</p>
+                            {% if vacancy.status %}
+                                <form action="{% url 'confirm_vacancy' vacancy.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit">Confirmar</button>
+                                </form>
+                            {% endif %}
+                    </div>
                 </div>
                 <p>
                     <a href="{% url 'dashboard_employee' %}" class="btn btn-success">Home Dashboard</a>

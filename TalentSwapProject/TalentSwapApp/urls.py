@@ -23,11 +23,17 @@ urlpatterns = [
 
     path('matched_vacancies/', views.matched_vacancies, name='matched_vacancies'),
 
+    path('statistics/', views.statistics, name='statistics'),
+
     path('logout/', views.logout, name='logout'),
 
     path('vacanciescompany/' , views.vacancy_listcompany, name= 'vacancy_listcompany'),
 
     path('vacanciesemployee/' , views.vacancy_listemployee, name= 'vacancy_listemployee'),
+
+    path('confirm_vacancy/<int:vacancy_id>/', views.confirm_vacancy, name='confirm_vacancy'),
+
+    path('reopen_vacancy/<int:vacancy_id>/', views.reopen_vacancy_company, name='reopen_vacancy'),
     
     path('vacancies/upload/' , views.upload_vacancy, name = 'upload_vacancy'),
 
