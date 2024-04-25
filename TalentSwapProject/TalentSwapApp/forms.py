@@ -5,7 +5,7 @@ from django import forms
 
 from django.forms.widgets import TextInput, PasswordInput
 
-from .models import Vacancy, applyVacancy, Comment
+from .models import Vacancy, Comment, Application, VacancyRating
 # Registro de usuario (Modelo u "objeto" formulario)
 
 class UserTypeForm(forms.Form):
@@ -45,12 +45,27 @@ class VacancyForm(forms.ModelForm):
         model = Vacancy 
         fields = ('title', 'description', 'document')
 
-class applyVacancyForm(forms.ModelForm):
-    class Meta:
-        model = applyVacancy
-        fields = ('title', 'name', 'profession')
 
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ('author', 'body')
+
+class ApplicationForm(forms.ModelForm):
+    class Meta:
+        model = Application
+        exclude = ('user', 'vacancy', 'status', 'created_on', 'id')
+
+class VacancyRatingForm(forms.ModelForm):
+    class Meta:
+        model = VacancyRating
+        fields = ['rating', 'experience']
+        widgets = {
+            'rating': forms.NumberInput(attrs={'min': '1', 'max': '5'}),
+        }
+        error_messages = {
+            'rating': {
+                'min_value': 'The rating must be at least 1 star.',
+                'max_value': 'The rating cannot be more than 5 stars.',
+            }
+        }

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MinValueValidator, MaxValueValidator
 # Create your models here.
 
 class User(AbstractUser):
@@ -56,20 +57,13 @@ class Vacancy(models.Model):
     title = models.CharField(max_length=150)
     description = models.TextField()
     created_on = models.DateTimeField(auto_now_add=True)
-    document = models.FileField(upload_to='vacancies/')
+    document = models.FileField(upload_to='vacancies/', null=True, blank=True)
     id = models.AutoField(primary_key=True)
 
     def __str__(self) -> str:
         return self.title
     
-class applyVacancy(models.Model):
-    title = models.CharField(max_length = 150)
-    name = models.CharField(max_length = 150)
-    profession = models.CharField(max_length = 300)  
 
-    def __str__(self):
-        return 'applyVacancy {} by {}'.format(self.title, self.name, self.profession)
-    
 class Comment(models.Model):
     vacancy = models.ForeignKey(Vacancy, on_delete=models.CASCADE, related_name='comments')
     author = models.CharField(max_length=60)
@@ -82,3 +76,33 @@ class Comment(models.Model):
 
     def __str__(self):
         return 'Comment {} by {}'.format(self.body, self.author)
+    
+class Application(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='applied_to', null=True, blank=True)
+    vacancy = models.ForeignKey(Vacancy, on_delete=models.CASCADE, related_name='applications')
+    status = models.CharField(max_length=15, choices=[('Pending', 'Pending'), ('Accepted', 'Accepted'), ('Rejected', 'Rejected')], default='Pending')
+    created_on = models.DateTimeField(auto_now_add=True)
+    information = models.TextField(null=True)
+    id = models.AutoField(primary_key=True)
+
+    class Meta:
+        ordering = ['created_on']
+
+    def __str__(self):
+        return 'Application for {} by {}'.format(self.vacancy, self.user)
+    
+class EmployeeRating(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='ratings')
+    rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+
+    def __str__(self):
+        return f"Rating for {self.employee.employee_name}: {self.rating} stars"
+    
+class VacancyRating(models.Model):
+    vacancy = models.ForeignKey(Vacancy, on_delete=models.CASCADE, related_name='ratings')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    experience = models.CharField(max_length=300, default = " No comments")
+
+    def __str__(self):
+        return f"Rating {self.rating} for Vacancy {self.vacancy.title} by User {self.user.username}"

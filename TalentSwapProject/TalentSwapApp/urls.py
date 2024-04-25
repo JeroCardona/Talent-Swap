@@ -19,6 +19,8 @@ urlpatterns = [
 
     path('dashboard_employee/', views.dashboard_employee, name='dashboard_employee'),
 
+    path('applied_vacancies/', views.applied_to_vacancy, name='applied_to_vacancy'),
+
     path('dashboard_company/', views.dashboard_company, name='dashboard_company'),
 
     path('matched_vacancies/', views.matched_vacancies, name='matched_vacancies'),
@@ -37,16 +39,12 @@ urlpatterns = [
     
     path('vacancies/upload/' , views.upload_vacancy, name = 'upload_vacancy'),
 
-    path('vacanciesemployee/applyVacancy/', views.apply_Vacancy, name = 'applyVacancy'),
-
-    path('vacancies/Applied_Vacancies', views.Applied_Vacancies, name = 'Applied_Vacancies'),
-
     path('vacancies/<int:id>/detailemployee/', views.vacancy_detailemployee, name='vacancy_detailemployee'),
 
     path('vacancies/<int:id>/detailcompany/', views.vacancy_detailcompany, name='vacancy_detailcompany'),
-    
-    path('deleteVacancy/<title>', views.delete_Vacancy, name = 'deleteVacancy'),
-    
+
+    path('vacancy/<int:id>/rate/', views.rate_vacancy, name='rate_vacancy'),
+
     path('download/', download_file, name='download_file'),
 
 

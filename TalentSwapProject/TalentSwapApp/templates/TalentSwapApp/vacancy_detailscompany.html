@@ -16,7 +16,30 @@
                         <h1>{% block title%}{{ vacancy.title }}{% endblock title%}</h1>
                         <p class="text-muted">Posted on {{ vacancy.created_on }}</p>
                         <p class="card-text">{{ vacancy.description | safe }}</p>
-                        <p>Document: <a href="{{ vacancy.document.url }}" class="btn btn-primary btn-sm" target="_blank">Download document</a></p>
+                        {% if vacancy.document %}
+                            <p>Document: <a href="{{ vacancy.document.url }}" class="btn btn-primary btn-sm" target="_blank">Download document</a></p>
+                        {% else %}
+                            <p>Document: Sin documento</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-8 card mb-4 mt-3">
+                    <div class="card-body">
+                        <!-- applications -->
+                        <h2>{{ applications.count }} applications</h2>
+                        {% for application in applications %}
+                            <div class="applications" style="padding: 10px;">
+                                <p class="font-weight-bold">
+                                    {{ application.user }}
+                                    <span class="text-muted font-weight-normal">
+                                       {{application.status}} since {{ application.created_on }}
+                                    </span>
+                                </p>
+                                <p>
+                                    {{ application.information | linebreaks }}
+                                </p>
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
                 <div class="col-md-8 card mb-4 mt-3">
@@ -38,30 +61,27 @@
                         {% endfor %}
                     </div>
                 </div>
-                <div class="col-md-8 card mb-4 mt-3">
-                    <div class="card-body">
-                        {% if new_comment %}
-                            <div class="alert alert-success" role="alert">
-                                Your comment is awaiting moderation
-                            </div>
-                        {% else %}
-                            <h3>Leave a comment</h3>
-                            <form method="post" style="margin-top: 1.3em;">
-                                {{ comment_form.as_p }}
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-primary btn-lg">Submit</button>
-                            </form>
-                        {% endif %}
-                    </div>
-                    <div class="card-body">
-                        <p>Status: {% if vacancy.status %}Disponible{% else %}No disponible{% endif %}</p>
-                        {% if not vacancy.status %}
+                <div class="card-body">
+                    <p>Status: {% if vacancy.status %}Disponible{% else %}No disponible{% endif %}</p>
+                    {% if not vacancy.status %}
                         <form action="{% url 'reopen_vacancy' vacancy.id %}" method="post">
-                                {% csrf_token %}
-                                <button type="submit">Reabrir</button>
-                            </form>
-                        {% endif %}
-                    </div>
+                            {% csrf_token %}
+                            <button type="submit">Reabrir</button>
+                        </form>
+                    {% endif %}
+
+                </div>
+                <div class="col-md-8 card mb-4 mt-3">
+                    <h3>Ratings</h3>
+                    {% for rating in vacancy.ratings.all %}
+                     <div class="border p-3 mb-3">
+                        <p><strong>User:</strong> {{ rating.user.username }}</p>
+                        <p><strong>Rating:</strong> {{ rating.rating }}</p>
+                        <p><strong>Experience:</strong> {{ rating.experience }}</p>
+                     </div>
+                    {% empty %}
+                        <p>No ratings yet</p>
+                    {% endfor %}
                 </div>
                 <p>
                     <a href="{% url 'dashboard_company' %}" class="btn btn-success">Home Dashboard</a>

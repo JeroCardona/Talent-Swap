@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Employee, Company, Vacancy, Comment, applyVacancy
+from .models import Employee, Company, Vacancy, Comment, Application, VacancyRating
 
 
 @admin.register(Vacancy)
@@ -18,11 +18,6 @@ class CommentAdmin(admin.ModelAdmin):
     def approve_comments(self, request, queryset):
         queryset.update(active=True)
 
-@admin.register(applyVacancy)
-class applyVacancyAdmin(admin.ModelAdmin):
-    list_display = ('title', 'name', 'profession')
-    list_filter = ('title', 'name', 'profession')
-    search_fields = ('title', 'name', 'profession')
 
 class EmployeeAdmin(admin.ModelAdmin):
     # Define cómo se mostrará el nombre del modelo en la interfaz de administración
@@ -32,8 +27,17 @@ class CompanyAdmin(admin.ModelAdmin):
     # Define cómo se mostrará el nombre del modelo en la interfaz de administración
     list_display = ['company_name']
 
+    
+admin.site.register(VacancyRating)
 admin.site.register(Employee, EmployeeAdmin)
 admin.site.register(Company, CompanyAdmin)
+
+@admin.register(Application)
+class ApplicationAdmin(admin.ModelAdmin):
+    list_display = ('user', 'vacancy', 'information', 'created_on', 'status')
+    list_filter = ('user', 'vacancy', 'status', 'created_on')
+    search_fields = ('user', 'vacancy')
+    
 
 
 # Register your models here.

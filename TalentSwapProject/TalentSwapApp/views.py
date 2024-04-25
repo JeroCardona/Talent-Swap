@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 import os
 from django.http import HttpResponse
 
-from . forms import  LoginForm, CommentForm
+from . forms import  LoginForm, CommentForm, ApplicationForm, VacancyRatingForm
 #Forms es un archivo nuevo donde se guardan los formularios
 from django.contrib.auth.decorators import login_required
 
@@ -16,15 +16,15 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.files.storage import FileSystemStorage
 
 from .forms import VacancyForm
-from .models import Vacancy, Comment
-
-from .forms import applyVacancyForm
-from .models import applyVacancy
+from .models import Vacancy, Application
 
 from .forms import UserTypeForm, CompanyRegistrationForm, EmployeeRegistrationForm
 from django.contrib.auth.models import User
 from .models import User, Company, Employee
 from django.contrib import messages
+
+from django.http import JsonResponse
+from django.db.models import Avg
 
 def homepage(request):
 
@@ -177,28 +177,6 @@ def upload_vacancy(request):
         return render(request, 'TalentSwapApp/upload_vacancy.html', {'form': form})
     
 
-def apply_Vacancy(request):
-    if request.method == "POST":
-        form = applyVacancyForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('Applied_Vacancies')
-    else:
-        form = applyVacancyForm()
-    return render(request, 'TalentSwapApp/applyVacancy.html', {
-        'form': form
-    })
-
-def Applied_Vacancies(request):
-    template_name = 'TalentSwapApp/Applied_vacancies.html'
-    vacancies = applyVacancy.objects.all()
-    return render(request, template_name, {'vacancies': vacancies})
-
-def delete_Vacancy(request, title):
-    vacancies = applyVacancy.objects.filter(title=title)
-    vacancies.delete()
-    
-    return render(request, 'TalentSwapApp/Applied_vacancies.html')
 
 def vacancy_detailemployee(request, id):
     template_name = 'TalentSwapApp/vacancy_detailsemployee.html'
@@ -216,7 +194,24 @@ def vacancy_detailemployee(request, id):
             new_comment.save()
     else:
         comment_form = CommentForm()
+
+
+    current_user = request.user
+
+    new_application = None
+    if request.method == 'POST':
+        application_form = ApplicationForm(data=request.POST)
+        if application_form.is_valid():
+            new_application = application_form.save(commit=False)
+            new_application.vacancy = vacancy
+            new_application.user = current_user
+            new_application.save()
+    else:
+        application_form = ApplicationForm()
+
     return render(request, template_name, {'vacancy': vacancy,
+                                        'new_application': new_application, 
+                                        'application_form': application_form,
                                         'comments': comments,
                                         'new_comment': new_comment,
                                         'comment_form': comment_form})
@@ -228,19 +223,11 @@ def vacancy_detailcompany(request, id):
     print(vacancy.description)
     print(vacancy.created_on)
     comments = vacancy.comments.filter(active=True)
-    new_comment = None
-    if request.method == 'POST':
-        comment_form = CommentForm(data=request.POST)
-        if comment_form.is_valid():
-            new_comment = comment_form.save(commit=False)
-            new_comment.vacancy = vacancy
-            new_comment.save()
-    else:
-        comment_form = CommentForm()
+    applications = vacancy.applications.filter(status='pending')
     return render(request, template_name, {'vacancy': vacancy,
                                         'comments': comments,
-                                        'new_comment': new_comment,
-                                        'comment_form': comment_form})
+                                        'applications': applications}
+                                        )
 
 def download_file(request):
     file_path = os.path.join(settings.MEDIA_ROOT, 'vacancies', 'GUÍA DE CONTRATO E INFORMACIÓN PERTINENTE.pdf')
@@ -295,4 +282,46 @@ def statistics(request):
     employees = Employee.objects.order_by('work_experience')
 
     # Pasar los empleados a la plantilla
-    return render(request, 'TalentSwapApp/statistics.html', {'employees': employees})    
+    return render(request, 'TalentSwapApp/statistics.html', {'employees': employees})
+
+    
+
+def applied_to_vacancy(request):
+    # Obtener todas las aplicaciones de un usuario
+    user = request.user
+    applications = Application.objects.filter(user=user)
+    return render(request, 'TalentSwapApp/applied_to_vacancy.html', {'applications': applications})
+
+
+def rate_vacancy(request, id):
+    if request.method == 'POST':
+        form = VacancyRatingForm(request.POST)
+        if form.is_valid():
+            vacancy = get_object_or_404(Vacancy, id=id)
+            rating = form.cleaned_data['rating']
+            experience = form.cleaned_data['experience']
+            
+            # Crear una instancia de VacancyRating con los datos del formulario
+            vacancy_rating = form.save(commit=False)
+            vacancy_rating.vacancy = vacancy
+            vacancy_rating.user = request.user
+            vacancy_rating.rating = rating
+            vacancy_rating.experience = experience
+            vacancy_rating.save()
+
+            # Calculando el rating promedio
+            ratings = vacancy.ratings.all()
+            avg_rating = ratings.aggregate(avg_rating=Avg('rating'))['avg_rating']
+
+            return JsonResponse({'message': 'Rating saved successfully', 'avg_rating': avg_rating})
+        else:
+            # Si el formulario no es válido, devuelve errores de validación
+            return JsonResponse({'errors': form.errors}, status=400)
+    else:
+        # Si la solicitud no es POST, devuelve un error
+        return JsonResponse({'error': 'Invalid request'}, status=400)
+
+def detail_company(request):
+    template_name = 'TalentSwapApp/vacancy_detailscompany.html'
+    vacancies = rate_vacancy.objects.all()
+    return render(request, template_name, {'vacancies': vacancies})
