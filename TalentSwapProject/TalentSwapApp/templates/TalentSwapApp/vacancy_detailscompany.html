@@ -69,6 +69,19 @@
                             <button type="submit">Reabrir</button>
                         </form>
                     {% endif %}
+
+                </div>
+                <div class="col-md-8 card mb-4 mt-3">
+                    <h3>Ratings</h3>
+                    {% for rating in vacancy.ratings.all %}
+                     <div class="border p-3 mb-3">
+                        <p><strong>User:</strong> {{ rating.user.username }}</p>
+                        <p><strong>Rating:</strong> {{ rating.rating }}</p>
+                        <p><strong>Experience:</strong> {{ rating.experience }}</p>
+                     </div>
+                    {% empty %}
+                        <p>No ratings yet</p>
+                    {% endfor %}
                 </div>
                 <p>
                     <a href="{% url 'dashboard_company' %}" class="btn btn-success">Home Dashboard</a>

@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 import os
 from django.http import HttpResponse
 
-from . forms import  LoginForm, CommentForm, ApplicationForm
+from . forms import  LoginForm, CommentForm, ApplicationForm, VacancyRatingForm
 #Forms es un archivo nuevo donde se guardan los formularios
 from django.contrib.auth.decorators import login_required
 
@@ -22,6 +22,9 @@ from .forms import UserTypeForm, CompanyRegistrationForm, EmployeeRegistrationFo
 from django.contrib.auth.models import User
 from .models import User, Company, Employee
 from django.contrib import messages
+
+from django.http import JsonResponse
+from django.db.models import Avg
 
 def homepage(request):
 
@@ -288,3 +291,37 @@ def applied_to_vacancy(request):
     user = request.user
     applications = Application.objects.filter(user=user)
     return render(request, 'TalentSwapApp/applied_to_vacancy.html', {'applications': applications})
+
+
+def rate_vacancy(request, id):
+    if request.method == 'POST':
+        form = VacancyRatingForm(request.POST)
+        if form.is_valid():
+            vacancy = get_object_or_404(Vacancy, id=id)
+            rating = form.cleaned_data['rating']
+            experience = form.cleaned_data['experience']
+            
+            # Crear una instancia de VacancyRating con los datos del formulario
+            vacancy_rating = form.save(commit=False)
+            vacancy_rating.vacancy = vacancy
+            vacancy_rating.user = request.user
+            vacancy_rating.rating = rating
+            vacancy_rating.experience = experience
+            vacancy_rating.save()
+
+            # Calculando el rating promedio
+            ratings = vacancy.ratings.all()
+            avg_rating = ratings.aggregate(avg_rating=Avg('rating'))['avg_rating']
+
+            return JsonResponse({'message': 'Rating saved successfully', 'avg_rating': avg_rating})
+        else:
+            # Si el formulario no es válido, devuelve errores de validación
+            return JsonResponse({'errors': form.errors}, status=400)
+    else:
+        # Si la solicitud no es POST, devuelve un error
+        return JsonResponse({'error': 'Invalid request'}, status=400)
+
+def detail_company(request):
+    template_name = 'TalentSwapApp/vacancy_detailscompany.html'
+    vacancies = rate_vacancy.objects.all()
+    return render(request, template_name, {'vacancies': vacancies})

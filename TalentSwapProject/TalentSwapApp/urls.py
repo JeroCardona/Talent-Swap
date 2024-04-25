@@ -43,6 +43,8 @@ urlpatterns = [
 
     path('vacancies/<int:id>/detailcompany/', views.vacancy_detailcompany, name='vacancy_detailcompany'),
 
+    path('vacancy/<int:id>/rate/', views.rate_vacancy, name='rate_vacancy'),
+
     path('download/', download_file, name='download_file'),
 
 

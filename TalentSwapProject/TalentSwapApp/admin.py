@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Employee, Company, Vacancy, Comment, Application
+from .models import Employee, Company, Vacancy, Comment, Application, VacancyRating
 
 
 @admin.register(Vacancy)
@@ -27,6 +27,8 @@ class CompanyAdmin(admin.ModelAdmin):
     # Define cómo se mostrará el nombre del modelo en la interfaz de administración
     list_display = ['company_name']
 
+    
+admin.site.register(VacancyRating)
 admin.site.register(Employee, EmployeeAdmin)
 admin.site.register(Company, CompanyAdmin)
 

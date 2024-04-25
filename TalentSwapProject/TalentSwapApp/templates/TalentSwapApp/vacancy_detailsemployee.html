@@ -83,6 +83,28 @@
                             {% endif %}
                     </div>
                 </div>
+                <div class="col-md-8 card mb-4 mt-3">
+                    <div class="card-body">
+                        <!-- Formulario para calificar la vacante -->
+                        <h3>Rate this vacancy</h3>
+                        <form method="post" action="{% url 'rate_vacancy' vacancy.id %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="rating">Rate this vacancy:</label>
+                                <input type="number" name="rating" id="rating" min="1" max="5">
+                            </div>
+                            <div class="mb-3">
+                                <label for="experience">Your experience:</label>
+                                <textarea name="experience" id="experience" class="form-control" rows="5"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Rate</button>
+                        </form>
+                    </div>
+                </div>
+                <script>
+                    fetch('{% url "vacancy_detailemployee" id=vacancy.id %}', {
+                    });
+                </script>
                 <p>
                     <a href="{% url 'dashboard_employee' %}" class="btn btn-success">Home Dashboard</a>
                 </p>

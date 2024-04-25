@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MinValueValidator, MaxValueValidator
 # Create your models here.
 
 class User(AbstractUser):
@@ -89,3 +90,19 @@ class Application(models.Model):
 
     def __str__(self):
         return 'Application for {} by {}'.format(self.vacancy, self.user)
+    
+class EmployeeRating(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='ratings')
+    rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+
+    def __str__(self):
+        return f"Rating for {self.employee.employee_name}: {self.rating} stars"
+    
+class VacancyRating(models.Model):
+    vacancy = models.ForeignKey(Vacancy, on_delete=models.CASCADE, related_name='ratings')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    experience = models.CharField(max_length=300, default = " No comments")
+
+    def __str__(self):
+        return f"Rating {self.rating} for Vacancy {self.vacancy.title} by User {self.user.username}"
