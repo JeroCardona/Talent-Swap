@@ -5,7 +5,7 @@ from django import forms
 
 from django.forms.widgets import TextInput, PasswordInput
 
-from .models import Vacancy, applyVacancy, Comment
+from .models import Vacancy, Comment
 # Registro de usuario (Modelo u "objeto" formulario)
 
 class UserTypeForm(forms.Form):
@@ -45,10 +45,6 @@ class VacancyForm(forms.ModelForm):
         model = Vacancy 
         fields = ('title', 'description', 'document')
 
-class applyVacancyForm(forms.ModelForm):
-    class Meta:
-        model = applyVacancy
-        fields = ('title', 'name', 'profession')
 
 class CommentForm(forms.ModelForm):
     class Meta:

@@ -62,14 +62,7 @@ class Vacancy(models.Model):
     def __str__(self) -> str:
         return self.title
     
-class applyVacancy(models.Model):
-    title = models.CharField(max_length = 150)
-    name = models.CharField(max_length = 150)
-    profession = models.CharField(max_length = 300)  
 
-    def __str__(self):
-        return 'applyVacancy {} by {}'.format(self.title, self.name, self.profession)
-    
 class Comment(models.Model):
     vacancy = models.ForeignKey(Vacancy, on_delete=models.CASCADE, related_name='comments')
     author = models.CharField(max_length=60)
