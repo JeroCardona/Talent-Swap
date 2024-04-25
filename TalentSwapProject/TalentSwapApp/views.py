@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 import os
 from django.http import HttpResponse
 
-from . forms import  LoginForm, CommentForm
+from . forms import  LoginForm, CommentForm, ApplicationForm
 #Forms es un archivo nuevo donde se guardan los formularios
 from django.contrib.auth.decorators import login_required
 
@@ -16,7 +16,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.files.storage import FileSystemStorage
 
 from .forms import VacancyForm
-from .models import Vacancy, Comment
+from .models import Vacancy, Application
 
 from .forms import UserTypeForm, CompanyRegistrationForm, EmployeeRegistrationForm
 from django.contrib.auth.models import User
@@ -191,7 +191,24 @@ def vacancy_detailemployee(request, id):
             new_comment.save()
     else:
         comment_form = CommentForm()
+
+
+    current_user = request.user
+
+    new_application = None
+    if request.method == 'POST':
+        application_form = ApplicationForm(data=request.POST)
+        if application_form.is_valid():
+            new_application = application_form.save(commit=False)
+            new_application.vacancy = vacancy
+            new_application.user = current_user
+            new_application.save()
+    else:
+        application_form = ApplicationForm()
+
     return render(request, template_name, {'vacancy': vacancy,
+                                        'new_application': new_application, 
+                                        'application_form': application_form,
                                         'comments': comments,
                                         'new_comment': new_comment,
                                         'comment_form': comment_form})
@@ -203,19 +220,11 @@ def vacancy_detailcompany(request, id):
     print(vacancy.description)
     print(vacancy.created_on)
     comments = vacancy.comments.filter(active=True)
-    new_comment = None
-    if request.method == 'POST':
-        comment_form = CommentForm(data=request.POST)
-        if comment_form.is_valid():
-            new_comment = comment_form.save(commit=False)
-            new_comment.vacancy = vacancy
-            new_comment.save()
-    else:
-        comment_form = CommentForm()
+    applications = vacancy.applications.filter(status='pending')
     return render(request, template_name, {'vacancy': vacancy,
                                         'comments': comments,
-                                        'new_comment': new_comment,
-                                        'comment_form': comment_form})
+                                        'applications': applications}
+                                        )
 
 def download_file(request):
     file_path = os.path.join(settings.MEDIA_ROOT, 'vacancies', 'GUÍA DE CONTRATO E INFORMACIÓN PERTINENTE.pdf')
@@ -270,4 +279,12 @@ def statistics(request):
     employees = Employee.objects.order_by('work_experience')
 
     # Pasar los empleados a la plantilla
-    return render(request, 'TalentSwapApp/statistics.html', {'employees': employees})    
+    return render(request, 'TalentSwapApp/statistics.html', {'employees': employees})
+
+    
+
+def applied_to_vacancy(request):
+    # Obtener todas las aplicaciones de un usuario
+    user = request.user
+    applications = Application.objects.filter(user=user)
+    return render(request, 'TalentSwapApp/applied_to_vacancy.html', {'applications': applications})

@@ -32,9 +32,9 @@ admin.site.register(Company, CompanyAdmin)
 
 @admin.register(Application)
 class ApplicationAdmin(admin.ModelAdmin):
-    list_display = ('employee', 'vacancy', 'created_on', 'status')
-    list_filter = ('employee', 'vacancy', 'status', 'created_on')
-    search_fields = ('employee', 'vacancy')
+    list_display = ('user', 'vacancy', 'information', 'created_on', 'status')
+    list_filter = ('user', 'vacancy', 'status', 'created_on')
+    search_fields = ('user', 'vacancy')
     
 
 

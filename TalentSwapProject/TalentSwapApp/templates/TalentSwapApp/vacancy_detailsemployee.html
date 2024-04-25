@@ -16,9 +16,29 @@
                         <h1>{% block title%}{{ vacancy.title }}{% endblock title%}</h1>
                         <p class="text-muted">Posted on {{ vacancy.created_on }}</p>
                         <p class="card-text">{{ vacancy.description | safe }}</p>
-                        <p>Document: <a href="{{ vacancy.document.url }}" class="btn btn-primary btn-sm" target="_blank">Download document</a></p>
+                        {% if vacancy.document %}
+                            <p>Document: <a href="{{ vacancy.document.url }}" class="btn btn-primary btn-sm" target="_blank">Download document</a></p>
+                        {% else %}
+                            <p>Document: Sin documento</p>
+                        {% endif %}
                     </div>
                 </div>
+                <div class="col-md-8 card mb-4 mt-3">
+                    <div class="card-body">
+                        <!-- applications -->
+                        {% if new_application %}
+                            <div class="alert alert-success" role="alert">
+                                Your application is pending
+                            </div>
+                        {% else %}
+                            <h3>Apply for this vacancy</h3>
+                            <form method="post" style="margin-top: 1.3em;">
+                                {{ application_form.as_p }}
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary btn-lg">Apply</button>
+                            </form>
+                        {% endif %}
+                    </div>      
                 <div class="col-md-8 card mb-4 mt-3">
                     <div class="card-body">
                         <!-- comments -->

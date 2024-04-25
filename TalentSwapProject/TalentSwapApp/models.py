@@ -56,7 +56,7 @@ class Vacancy(models.Model):
     title = models.CharField(max_length=150)
     description = models.TextField()
     created_on = models.DateTimeField(auto_now_add=True)
-    document = models.FileField(upload_to='vacancies/')
+    document = models.FileField(upload_to='vacancies/', null=True, blank=True)
     id = models.AutoField(primary_key=True)
 
     def __str__(self) -> str:
@@ -77,14 +77,15 @@ class Comment(models.Model):
         return 'Comment {} by {}'.format(self.body, self.author)
     
 class Application(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='applied_to')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='applied_to', null=True, blank=True)
     vacancy = models.ForeignKey(Vacancy, on_delete=models.CASCADE, related_name='applications')
-    status = models.CharField(max_length=15, choices=[('pending', 'Pending'), ('accepted', 'Accepted'), ('rejected', 'Rejected')], default='pending')
+    status = models.CharField(max_length=15, choices=[('Pending', 'Pending'), ('Accepted', 'Accepted'), ('Rejected', 'Rejected')], default='Pending')
     created_on = models.DateTimeField(auto_now_add=True)
+    information = models.TextField(null=True)
     id = models.AutoField(primary_key=True)
 
     class Meta:
         ordering = ['created_on']
 
     def __str__(self):
-        return 'Application for {} by {}'.format(self.vacancy, self.employee)
+        return 'Application for {} by {}'.format(self.vacancy, self.user)
