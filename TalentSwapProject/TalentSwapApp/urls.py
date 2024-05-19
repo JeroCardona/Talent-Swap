@@ -47,6 +47,8 @@ urlpatterns = [
 
     path('download/', download_file, name='download_file'),
 
+    path('users/', views.users, name='usersPage'),
+
 
 ]
 
