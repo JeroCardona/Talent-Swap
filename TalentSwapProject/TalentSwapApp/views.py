@@ -155,15 +155,29 @@ def upload(request):
     return render(request, 'upload.html', context)
 
 def vacancy_listemployee(request):
-    vacancies = Vacancy.objects.all()
-    return render(request, 'TalentSwapApp/vacancy_listemployee.html',{
-        'vacancies' : vacancies
+    searchTerm = request.GET.get('buscarVacante')
+    if searchTerm:
+        vacanciesName = Vacancy.objects.filter(title__icontains=searchTerm)
+        vacanciesDesc = Vacancy.objects.filter(description__icontains=searchTerm)
+        vacancies = vacanciesName.union(vacanciesDesc)
+    else:
+        vacancies = Vacancy.objects.all()
+    return render(request, 'TalentSwapApp/vacancy_listemployee.html', {
+        'vacancies': vacancies,
+        'searchTerm': searchTerm
     })
 
 def vacancy_listcompany(request):
-    vacancies = Vacancy.objects.all()
-    return render(request, 'TalentSwapApp/vacancy_listcompany.html',{
-        'vacancies' : vacancies
+    searchTerm = request.GET.get('buscarVacante')
+    if searchTerm:
+        vacanciesName = Vacancy.objects.filter(title__icontains=searchTerm)
+        vacanciesDesc = Vacancy.objects.filter(description__icontains=searchTerm)
+        vacancies = vacanciesName.union(vacanciesDesc)
+    else:
+        vacancies = Vacancy.objects.all()
+    return render(request, 'TalentSwapApp/vacancy_listemployee.html', {
+        'vacancies': vacancies,
+        'searchTerm': searchTerm
     })
 
 def upload_vacancy(request):
@@ -325,3 +339,14 @@ def detail_company(request):
     template_name = 'TalentSwapApp/vacancy_detailscompany.html'
     vacancies = rate_vacancy.objects.all()
     return render(request, template_name, {'vacancies': vacancies})
+
+def users(request):
+    template_name = 'TalentSwapApp/users.html'
+    searchTerm = request.GET.get('buscarUsuario')
+    if searchTerm:
+        companies = Company.objects.filter(company_name__icontains=searchTerm)
+        employees = Employee.objects.filter(employee_name__icontains=searchTerm)
+    else:
+        employees = Employee.objects.all()
+        companies = Company.objects.all()
+    return render(request, template_name, {'searchTerm': searchTerm,'employees': employees, 'companies': companies})

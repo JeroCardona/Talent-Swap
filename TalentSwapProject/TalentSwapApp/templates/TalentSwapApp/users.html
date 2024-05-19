@@ -1,0 +1,69 @@
+{% load static %}
+<!doctype html>
+<html lang="en">   
+    <head>
+        <div class="container">
+
+            <h1>Listado de usuarios</h1>
+            <link rel="stylesheet" href="{% static 'users.css' %}">
+        </div>
+    </head>
+
+    <body>
+        <div class="contain">
+            <form class="busqueda" action="">
+                <div class="mb-3">
+                    <label for="buscarUsuario" class="form-label">
+                        Buscar Usuario:
+                    </label>
+                    <input type="text" class="form-control" name="buscarUsuario" value="{{ searchTerm|default:'' }}">
+                </div>
+            </form>
+            {% if searchTerm %}
+                <p class="buscando">Buscando para "{{ searchTerm }}"</p>
+            {% endif %}
+            <div class="contenedor">
+                <div class="employees">
+                    Listado de empleados
+                    {% if employees %}
+                        {% for employee in employees %}
+                        <div class="employee">
+                            <h3 class="nombre">{{ employee.employee_name }}</h3>
+                            <p class="text-muted" >{{ employee.work_experience }} meses de experiencia</p>
+                            {% if employee.interests %}
+                            <p class="Desc">{{ employee.interests }}</p>
+                            {%else%}
+                            <p class="alert alert-warning">Intereses no especificados</p>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        {% if searchTerm %}
+                            <div class="alert alert-warning" role="alert">
+                                No hay empleados que coincidan con esta búsqueda.
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+                <div class="companies">
+                    Listado de empresas
+                    {% if companies %}
+                        {% for company in companies %}
+                        <div class="company">
+                            <h3 class="nombre">{{ company.company_name }}</h3>
+                            <p class="text-muted">Compañía de tipo {{company.company_type}}</p>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        {% if searchTerm %}
+                            <div class="alert alert-warning" role="alert">
+                                No hay empresas que coincidan con esta búsqueda.
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -10,6 +10,17 @@
     <body>
         <div class="container">
         {% block content %}
+        <form class="busqueda" action="">
+            <div class="mb-3">
+                <label for="buscarVacante" class="form-label">
+                    Buscar vacante:
+                </label>
+                <input type="text" class="form-control" name="buscarVacante" value="{{ searchTerm|default:'' }}">
+            </div>
+        </form>
+        {% if searchTerm %}
+            <p class="buscando">Buscando para "{{ searchTerm }}"</p>
+        {% endif %}
         <table class="table table-bordered border-primary table-success table-hover">
             <thead>
                 <tr>
