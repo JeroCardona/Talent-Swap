@@ -27,6 +27,10 @@ class Employee(User):
     interests = models.TextField()
     employee_name = models.CharField(max_length=255, blank=True, null=True)
 
+    class Meta:
+        verbose_name = 'Employee'
+        verbose_name_plural = 'Employees'
+
     def __str__(self):
         return self.employee_name 
 
@@ -48,6 +52,10 @@ class Company(User):
     )
     company_name = models.CharField(max_length=255, blank=True, null=True)
     company_type = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'Company'
+        verbose_name_plural = 'Companies'
     
     def __str__(self):
         return self.company_name
