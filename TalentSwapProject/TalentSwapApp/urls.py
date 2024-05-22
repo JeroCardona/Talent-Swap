@@ -41,14 +41,17 @@ urlpatterns = [
 
     path('vacancies/<int:id>/detailemployee/', views.vacancy_detailemployee, name='vacancy_detailemployee'),
 
-    path('vacancies/<int:id>/detailcompany/', views.vacancy_detailcompany, name='vacancy_detailcompany'),
+    path('vacancies/<int:vacancy_id>/detailcompany/', views.vacancy_detailcompany, name='vacancy_detailcompany'),
 
     path('vacancy/<int:id>/rate/', views.rate_vacancy, name='rate_vacancy'),
 
     path('download/', download_file, name='download_file'),
 
-    path('users/', views.users, name='usersPage'),
+    path('profile/', views.profile_view, name='profile'),
+    
+    path('profile/<int:user_id>/', views.view_profile, name='view_profile'),
 
+    path('users/', views.users, name='usersPage'),
 
 ]
 

@@ -5,7 +5,7 @@ from django import forms
 
 from django.forms.widgets import TextInput, PasswordInput
 
-from .models import Vacancy, Comment, Application, VacancyRating
+from .models import Vacancy, Comment, Application, VacancyRating, Employee, Company
 # Registro de usuario (Modelo u "objeto" formulario)
 
 class UserTypeForm(forms.Form):
@@ -69,3 +69,13 @@ class VacancyRatingForm(forms.ModelForm):
                 'max_value': 'The rating cannot be more than 5 stars.',
             }
         }
+
+class EmployeeEditForm(forms.ModelForm):
+    class Meta:
+        model = Employee
+        fields = ['employee_name', 'email', 'information', 'interests', 'work_experience']
+
+class CompanyEditForm(forms.ModelForm):
+    class Meta:
+        model = Company
+        fields = ['company_name', 'email', 'information', 'company_type']

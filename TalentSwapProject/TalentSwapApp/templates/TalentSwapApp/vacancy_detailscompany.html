@@ -83,6 +83,12 @@
                         <p>No ratings yet</p>
                     {% endfor %}
                 </div>
+                {% for application in applications %}
+                <div>
+                    <p>Applicant: <a href="{% url 'view_profile' application.user.id %}">{{ application.user.username }}</a></p>
+                    <p>Status: {{ application.status }}</p>
+                </div>
+                {% endfor %}
                 <p>
                     <a href="{% url 'dashboard_company' %}" class="btn btn-success">Home Dashboard</a>
                 </p>

@@ -12,6 +12,10 @@
         {% block content %}
 
         <p>
+            <a href="{% url 'profile' %}" class="btn btn-primary">Profile</a>
+        </p>
+
+        <p>
             <a href="{% url 'download_file' %}" download="Guide contract" class="btn btn-success">Download Contract</a>
         </p>
 
@@ -25,10 +29,6 @@
 
         <p>
             <a href="{% url 'statistics' %}" class="btn btn-success">Statistics</a>
-        </p>
-        
-        <p>
-            <a href="{% url 'usersPage' %}" class="btn btn-primary">Users</a>
         </p>
 
         <p>

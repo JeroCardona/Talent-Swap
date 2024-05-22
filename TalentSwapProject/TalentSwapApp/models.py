@@ -52,11 +52,11 @@ class Company(User):
     )
     company_name = models.CharField(max_length=255, blank=True, null=True)
     company_type = models.CharField(max_length=255, blank=True, null=True)
-
+    
     class Meta:
         verbose_name = 'Company'
         verbose_name_plural = 'Companies'
-    
+
     def __str__(self):
         return self.company_name
 
@@ -113,4 +113,4 @@ class VacancyRating(models.Model):
     experience = models.CharField(max_length=300, default = " No comments")
 
     def __str__(self):
-        return f"Rating {self.rating} for Vacancy {self.vacancy.title} by User {self.user.username}"
+        return f"Rating {self.rating} for Vacancy {self.vacancy.title} by User {self.user.username}" 

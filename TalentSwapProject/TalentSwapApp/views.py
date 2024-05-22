@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 import os
 from django.http import HttpResponse
 
-from . forms import  LoginForm, CommentForm, ApplicationForm, VacancyRatingForm
+from . forms import  LoginForm, CommentForm, ApplicationForm, VacancyRatingForm, EmployeeEditForm, CompanyEditForm
 #Forms es un archivo nuevo donde se guardan los formularios
 from django.contrib.auth.decorators import login_required
 
@@ -16,7 +16,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.files.storage import FileSystemStorage
 
 from .forms import VacancyForm
-from .models import Vacancy, Application
+from .models import Vacancy, Application, VacancyRating
 
 from .forms import UserTypeForm, CompanyRegistrationForm, EmployeeRegistrationForm
 from django.contrib.auth.models import User
@@ -25,6 +25,7 @@ from django.contrib import messages
 
 from django.http import JsonResponse
 from django.db.models import Avg
+from .decorators import employee_required, company_required
 
 def homepage(request):
 
@@ -60,7 +61,7 @@ def register_employee(request):
             user.work_experience = work_experience
             user.save()
             messages.success(request, '¡Empleado registrado correctamente!')
-            return redirect('dashboard_employee')  # Redirigir a la página de dashboard del empleado
+            return redirect('login')  # Redirigir a la página de dashboard del empleado
     else:
         form = EmployeeRegistrationForm()
     return render(request, 'TalentSwapApp/register_employee.html', {'form': form})
@@ -79,7 +80,7 @@ def register_company(request):
             user.company_type = company_type
             user.save()
             messages.success(request, '¡Compañía registrada correctamente!')
-            return redirect('dashboard_company')  # Redirigir a la página de dashboard de la compañía
+            return redirect('login')  # Redirigir a la página de dashboard de la compañía
     else:
         form = CompanyRegistrationForm()
     return render(request, 'TalentSwapApp/register_company.html', {'form': form})
@@ -155,29 +156,15 @@ def upload(request):
     return render(request, 'upload.html', context)
 
 def vacancy_listemployee(request):
-    searchTerm = request.GET.get('buscarVacante')
-    if searchTerm:
-        vacanciesName = Vacancy.objects.filter(title__icontains=searchTerm)
-        vacanciesDesc = Vacancy.objects.filter(description__icontains=searchTerm)
-        vacancies = vacanciesName.union(vacanciesDesc)
-    else:
-        vacancies = Vacancy.objects.all()
-    return render(request, 'TalentSwapApp/vacancy_listemployee.html', {
-        'vacancies': vacancies,
-        'searchTerm': searchTerm
+    vacancies = Vacancy.objects.all()
+    return render(request, 'TalentSwapApp/vacancy_listemployee.html',{
+        'vacancies' : vacancies
     })
 
 def vacancy_listcompany(request):
-    searchTerm = request.GET.get('buscarVacante')
-    if searchTerm:
-        vacanciesName = Vacancy.objects.filter(title__icontains=searchTerm)
-        vacanciesDesc = Vacancy.objects.filter(description__icontains=searchTerm)
-        vacancies = vacanciesName.union(vacanciesDesc)
-    else:
-        vacancies = Vacancy.objects.all()
-    return render(request, 'TalentSwapApp/vacancy_listemployee.html', {
-        'vacancies': vacancies,
-        'searchTerm': searchTerm
+    vacancies = Vacancy.objects.all()
+    return render(request, 'TalentSwapApp/vacancy_listcompany.html',{
+        'vacancies' : vacancies
     })
 
 def upload_vacancy(request):
@@ -307,6 +294,7 @@ def applied_to_vacancy(request):
     return render(request, 'TalentSwapApp/applied_to_vacancy.html', {'applications': applications})
 
 
+@login_required
 def rate_vacancy(request, id):
     if request.method == 'POST':
         form = VacancyRatingForm(request.POST)
@@ -335,10 +323,67 @@ def rate_vacancy(request, id):
         # Si la solicitud no es POST, devuelve un error
         return JsonResponse({'error': 'Invalid request'}, status=400)
 
-def detail_company(request):
+def vacancy_detailcompany(request, vacancy_id):
     template_name = 'TalentSwapApp/vacancy_detailscompany.html'
-    vacancies = rate_vacancy.objects.all()
-    return render(request, template_name, {'vacancies': vacancies})
+    vacancy = get_object_or_404(Vacancy, pk=vacancy_id)
+    applications = vacancy.applications.all()
+    comments = vacancy.comments.all()
+    return render(request, template_name, {'vacancy': vacancy, 'applications': applications, 'comments': comments})
+
+@login_required
+def profile_view(request):
+    user = request.user
+    profile = None
+    profile_type = None
+    show_form = request.GET.get('edit') == 'true'
+
+    if hasattr(user, 'employee'):
+        profile = Employee.objects.get(id=user.id)
+        profile_type = 'employee'
+        form = EmployeeEditForm(instance=profile)
+    elif hasattr(user, 'company'):
+        profile = Company.objects.get(id=user.id)
+        profile_type = 'company'
+        form = CompanyEditForm(instance=profile)
+    else:
+        form = None
+
+    if request.method == 'POST':
+        if profile_type == 'employee':
+            form = EmployeeEditForm(request.POST, instance=profile)
+        elif profile_type == 'company':
+            form = CompanyEditForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Profile updated successfully!')
+            return redirect('profile')  # Redirige a la vista de perfil después de la actualización
+
+    context = {
+        'profile': profile,
+        'profile_type': profile_type,
+        'form': form,
+        'show_form': show_form
+    }
+    return render(request, 'TalentSwapApp/profile.html', context)
+@login_required
+def view_profile(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    profile = None
+    profile_type = None
+
+    if hasattr(user, 'employee'):
+        profile = user.employee
+        profile_type = 'employee'
+    elif hasattr(user, 'company'):
+        profile = user.company
+        profile_type = 'company'
+
+    context = {
+        'profile': profile,
+        'profile_type': profile_type,
+        'viewing': True  # Flag para indicar que es un perfil de visualización, no edición
+    }
+    return render(request, 'TalentSwapApp/profile_view.html', context)
 
 def users(request):
     template_name = 'TalentSwapApp/users.html'
