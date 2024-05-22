@@ -156,15 +156,30 @@ def upload(request):
     return render(request, 'upload.html', context)
 
 def vacancy_listemployee(request):
-    vacancies = Vacancy.objects.all()
-    return render(request, 'TalentSwapApp/vacancy_listemployee.html',{
-        'vacancies' : vacancies
+    searchTerm = request.GET.get('buscarVacante')
+    if searchTerm:
+        vacanciesName = Vacancy.objects.filter(title__icontains=searchTerm)
+        vacanciesDesc = Vacancy.objects.filter(description__icontains=searchTerm)
+        vacancies = vacanciesName.union(vacanciesDesc)
+    else:
+        vacancies = Vacancy.objects.all()
+    return render(request, 'TalentSwapApp/vacancy_listemployee.html', {
+        'vacancies': vacancies,
+        'searchTerm': searchTerm
     })
 
+
 def vacancy_listcompany(request):
-    vacancies = Vacancy.objects.all()
-    return render(request, 'TalentSwapApp/vacancy_listcompany.html',{
-        'vacancies' : vacancies
+    searchTerm = request.GET.get('buscarVacante')
+    if searchTerm:
+        vacanciesName = Vacancy.objects.filter(title__icontains=searchTerm)
+        vacanciesDesc = Vacancy.objects.filter(description__icontains=searchTerm)
+        vacancies = vacanciesName.union(vacanciesDesc)
+    else:
+        vacancies = Vacancy.objects.all()
+    return render(request, 'TalentSwapApp/vacancy_listemployee.html', {
+        'vacancies': vacancies,
+        'searchTerm': searchTerm
     })
 
 def upload_vacancy(request):
