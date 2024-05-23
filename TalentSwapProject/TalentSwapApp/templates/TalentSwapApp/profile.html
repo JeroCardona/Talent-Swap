@@ -24,11 +24,11 @@
                         <p class="card-text"><strong>Email:</strong> {{ profile.email }}</p>
                         <div class="w-full">
                             <p class="card-text"><strong>Information:</strong></p>
-                            <textarea class="form-control" rows="3" readonly>{{ profile.information }}</textarea>
+                            <textarea class="form-control" >{{ profile.information }}</textarea>
                         </div>
                         <div class="w-full">
                             <p class="card-text"><strong>Interests:</strong></p>
-                            <textarea class="form-control" rows="3" readonly>{{ profile.interests }}</textarea>
+                            <textarea class="form-control">{{ profile.interests }}</textarea>
                         </div>
                         <p class="card-text"><strong>Work Experience:</strong> {{ profile.work_experience }} months</p>
                         <a href="{% url 'dashboard_employee' %}" class="btn btn-primary btn-custom">Employee Dashboard</a>
