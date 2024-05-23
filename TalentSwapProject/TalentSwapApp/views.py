@@ -177,7 +177,7 @@ def vacancy_listcompany(request):
         vacancies = vacanciesName.union(vacanciesDesc)
     else:
         vacancies = Vacancy.objects.all()
-    return render(request, 'TalentSwapApp/vacancy_listemployee.html', {
+    return render(request, 'TalentSwapApp/vacancy_listcompany.html', {
         'vacancies': vacancies,
         'searchTerm': searchTerm
     })

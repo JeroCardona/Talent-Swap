@@ -13,7 +13,13 @@ class UserTypeForm(forms.Form):
         ('company', 'Company'),
         ('employee', 'Employee'),
     ]
-    user_type = forms.ChoiceField(label='User Type', choices=USER_CHOICES, widget=forms.RadioSelect)
+    user_type = forms.ChoiceField(
+        label='User Type',
+        choices=USER_CHOICES,
+        widget=forms.RadioSelect(attrs={
+            'class': 'w-4 h-4 border-gray-300 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-600 dark:focus:bg-blue-600 dark:bg-gray-700 dark:border-gray-600'
+        })
+    )
 
 class CompanyRegistrationForm(forms.Form):
     username = forms.CharField(label='Username')
