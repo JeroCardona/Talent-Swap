@@ -38,7 +38,7 @@
                         <p class="card-text"><strong>Email:</strong> {{ profile.email }}</p>
                         <div class="w-full">
                             <p class="card-text"><strong>Information:</strong></p>
-                            <textarea class="form-control" rows="3" readonly>{{ profile.information }}</textarea>
+                            <textarea class="form-control">{{ profile.information }}</textarea>
                         </div>
                         <p class="card-text"><strong>Company Type:</strong> {{ profile.company_type }}</p>
                         <a href="{% url 'dashboard_company' %}" class="btn btn-primary btn-custom">Company Dashboard</a>
