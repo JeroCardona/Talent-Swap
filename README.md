@@ -12,5 +12,3 @@ Installation
 5. Confirm the migrations with the `python manage.py migrate` command.
 6. Now, run the `python manage.py runserver` command to get the web application up and running.
 7. Access `localhost:8000` from the browser of your choice.
-
-Translated with DeepL.com (free version)
